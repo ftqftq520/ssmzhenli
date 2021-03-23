@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>工具参数设置</title>
+<meta charset="utf-8">
+<meta name="decorator" content="window" />
+<script type="text/javascript" src="script/moneyRateJson.js"></script>
+<script type="text/javascript">
+var treeObj;
+//保存当前的利率数
+var rateResult;
+
+//初始化树
+function initTree(){
+	var setting = {
+		callback : {
+			onClick : onClick
+		}
+	};
+	var zNodes = [];
+	treeObj = $.fn.zTree.init($("#moneyRateTree"), setting, zNodes);
+	var rootNode = {name:ratejson.desc,id:ratejson.id}; //根节点
+	rootNode = treeObj.addNodes(null, rootNode)[0];
+	for(var i=0;i<ratejson.rateitems.length;i++){
+		var item=ratejson.rateitems[i];
+		var firstLevelNode = {name:item.desc,id:item.id}; //第一级子节点
+		firstLevelNode = treeObj.addNodes(rootNode, firstLevelNode)[0];
+		for(var j=0;j<item.rateitems.length;j++){
+			var secondLevelNode = {name:item.rateitems[j].desc,id:item.rateitems[j].id};
+			secondLevelNode = treeObj.addNodes(firstLevelNode, secondLevelNode)[0];
+		}
+	}
+}
+function onClick(event, treeId, treeNode, clickFlag){
+	var rateTable=document.getElementById("rateTab");
+	///清除原数据
+	$("#label_remark").html(""); 
+	var j=1;
+	while(j<rateTable.rows.length){
+		rateTable.deleteRow(j);
+	}
+	//非叶子节点不显示数据
+	if(treeNode.children != undefined && treeNode.children != null) {
+		return;
+	}
+	var id=treeNode.id;
+	rateResult=ratejson.findRateItem(id,ratejson);
+	$("#label_remark").html(rateResult.desc);
+	for(var i=0;i<rateResult.time_rate.length;i++){
+		var tr = document.createElement("tr");
+		var td_label = document.createElement("td");
+		var td_input = document.createElement("td");
+		var td=document.createElement("td");
+		td.style.cssText="width:50%;";
+		td_label.innerHTML="<LABEL  class=green >"+calYear(rateResult.time_rate[i].month)+"</LABEL>";
+		td_input.innerHTML="&nbsp;<SPAN style='WHITE-SPACE: nowrap'><INPUT onkeypress='keyPress(event);' style='width:60px;text-align:right;'  class=text value='"+rateResult.time_rate[i].rate+"' onchange='setRateValue(rateResult,"+i+",this.value)' >%<SPAN class=red>*</SPAN></SPAN>"
+		tr.appendChild(td_label);
+		tr.appendChild(td_input);
+		tr.appendChild(td);
+		rateTable.tBodies[0].appendChild(tr);
+	}
+}
+
+function isEmpty(value){
+	if(value == null || value == "")
+		return true;
+	return false;
+}
+//计算年
+function calYear(month) {
+	if (typeof(month) == "object") {
+		minyear = month.month_min / 12;
+		maxyear = month.month_max / 12;
+		var return_str="";
+		if (minyear == 0)
+			return_str += ""
+		else if (minyear < 1)
+			return_str += month.month_min + "月-";
+		else
+			return_str += minyear + "年-";
+		if (maxyear <= 0)
+			return_str += "以上";
+		else if(0 < maxyear && maxyear < 1 )
+			return_str += month.month_max + "月";
+		else return_str += maxyear + "年";
+		return return_str;
+	} else {
+		year = month / 12;
+		if (0 < year && year < 1) {
+			return month + "月";
+		} else if (year <= 0) {
+			return "利率";
+		}
+		return year + "年";
+	}
+}
+function keyPress(evt){
+	var key = evt.keyCode?evt.keyCode:evt.which;
+	if(window.event) {
+		if(key == 45 || key == 46 || (key >= 48 && key <= 57)){
+			event.returnValue = true ;
+		} else {
+			event.returnValue = false;
+		}
+	} else {
+		if(key == 8 || key == 45 || key == 46 || (key >= 48 && key <= 57)){
+			
+		} else {
+			evt.preventDefault();
+		}
+	}
+}
+//设置新的利率值
+function setRateValue(rateResult,num,value){
+	rateResult.time_rate[num].rate=value;
+	
+}
+//保存
+function save(){
+	var text=JSON.stringify(ratejson);
+	text = String(text);
+	console.info(ratejson);
+	$.icrmAjax({
+		type : "post",
+		dataType : "json",
+		url : encodeURI(Global.ctx + "/html/im/moneyRate/saveRate.do?ratejson=" + text),
+		data : null,
+		success : function(data) {
+			$.icrmDialog.showMessge('提示','数据保存成功');
+		}
+	}); 
+}
+/*
+$(function(){
+	//递归查询利率
+	ratejson.findRateItem = function(id, rateItem) {
+		var result;
+		if (rateItem.id == id) {
+			return rateItem;
+		} else if (rateItem.id != id && rateItem.rateitems != null) {
+			for (var i = 0; i < rateItem.rateitems.length; i++) {
+				result = this.findRateItem(id, rateItem.rateitems[i]);
+				if (result != null)
+					return result;
+			}
+		}
+		return null;
+	},
+	// 查询对应区间的利率
+	ratejson.findRate = function(month, rateItem) {
+		if (rateItem == null)
+			return;
+	
+		if (typeof(rateItem) != "array" && rateItem.time_rate != null) {
+			rateItem = rateItem.time_rate;
+		}
+		for (var i = 0; i < rateItem.length; i++) {
+			if (typeof(rateItem[i].month) == "object") {
+				var month_min = rateItem[i].month.month_min;
+				var month_max = rateItem[i].month.month_max;
+				if (month_max < 0)
+					month_max = 999;
+				if (month > month_min && month <= month_max)
+					return parseFloat(rateItem[i].rate)/100;
+			} else {
+				if (month == rateItem[i].month)
+					return parseFloat(rateItem[i].rate)/100;
+			}
+		}
+	} 
+});
+*/
+</script>
+</head>
+<body>
+<div class="row">
+	<div class="col-md-12">
+		<button id="btn_save" type="button" class="btn btn-sm btn-success" onclick="save()">
+			<i class="icon-save bigger-110"></i>保存
+		</button>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-4 col-sm-4">
+		<div class="widget-box">
+			<div class="widget-header widget-header-flat">
+				<h4 class="lighter smaller">工具参数类型</h4>
+			</div>
+			<div class="widget-body">
+				<div class="widget-main">
+					<ul id="moneyRateTree" class="ztree"></ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8 col-sm-8">
+		<div class="widget-box">
+		<div class="widget-header widget-header-flat">
+				<h4 class="lighter smaller">工具参数值</h4>
+			</div>
+			<div class="widget-body">
+				<div class="widget-main">
+					<table id="rateTab" width="100%" border="0" height:400px>
+						<tr>
+							<td colspan="3"><label id="label_remark"></label></td> 
+						</tr>  
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

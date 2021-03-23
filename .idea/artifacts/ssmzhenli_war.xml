@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="ssmzhenli:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>ssmzhenli</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="ssmzhenli-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="ssmzhenli:war exploded" />
+    </root>
+  </artifact>
+</component>

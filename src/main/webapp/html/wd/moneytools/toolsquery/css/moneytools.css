@@ -1,0 +1,12 @@
+/************************************************ 以下定义咨讯样式*********************************************/
+.add_chen { font-size:14px; color:#15649f; }
+.add_h3 { float:left; width:100%;  line-height:24px; padding-left:15px; font-size:14px; color:#8b8b8b; border:1px solid #d5d9e4; background:#f2f5fc;}
+.calculate .t { float:left; width:100%; border:1px solid #d5d9e4;  margin-top:15px; height:29px; background:#f2f5fc; line-height:29px; padding:0 10px; font-size:14px; color:#15649f;}
+.calculate .c { float:left; width:100%; padding:10px 0; border:1px solid #d5d9e4; padding-left:15px; border-top:0; }
+.calculate .c ul li { float:left; padding-left:10px; width:100%; padding:5px 0; }
+.calculate .c ul li .l { float:left;}
+.calculate .c ul li .l img { border:1px solid #999999;}
+.calculate .c ul li .l input { border:1px solid #a5b0c5;}
+.calculate .c ul li .txt { float:left; width:130px;}
+.calculate .c ul li .txt2 {  width:130px;}
+.calculate .btnStyle { border: 1px solid #4777b8;  font:9pt; float:right;  cursor: pointer; height: 22px; color:#07657d; line-height:19px; overflow:hidden; padding:0; margin-right:50px; padding:0 5px; }

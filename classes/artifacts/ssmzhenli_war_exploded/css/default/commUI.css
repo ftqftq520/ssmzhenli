@@ -1,0 +1,56 @@
+.visible-480,tr.visible-480,th.visible-480,td.visible-480 {
+	display: none !important;
+}
+
+@media ( max-width : 480px) {
+	.visible-480 {
+		display: block !important;
+	}
+	tr.visible-480 {
+		display: table-row !important;
+	}
+	th.visible-480,td.visible-480 {
+		display: table-cell !important;
+	}
+}
+.has-error input, has-error select, has-error textarea {
+    border-color: #F09784;
+    box-shadow: none;
+    color: #D68273;
+}
+.has-error input:focus, .has-error select:focus, .has-error textarea:focus {
+    border-color: #DB8978;
+    box-shadow: 0 0 0 2px rgba(219, 137, 120, 0.3);
+    color: #886666;
+}
+.has-error input:focus + [class*="icon-"], .has-error select:focus + [class*="icon-"], .has-error textarea:focus + [class*="icon-"] {
+    color: #D68273;
+}
+.has-error [class*="icon-"] {
+    color: #D68273;
+}
+.has-error .btn [class*="icon-"] {
+    color: inherit;
+}
+.has-error .control-label, has-error .help-block, .has-error .help-inline {
+    color: #D16E6C;
+}
+/*datatables æ””“*/
+.text-right {
+	text-align:right;
+}
+/*datatables æ”◊Û*/
+.text-left {
+	text-align:left;
+}
+
+/*datatables ±ÌÕ∑æ”÷–*/
+.thead-text-center {
+	text-align:center hidden-480;
+}
+
+.required-color{
+	color:red;
+	text-align:left;
+	padding-top:7px;
+}

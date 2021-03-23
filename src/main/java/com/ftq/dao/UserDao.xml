@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftq.dao.UserDao">
+    <select id="getName" parameterType="java.lang.String" resultType="java.lang.String">
+        select t.name from user t where id = #{id}
+    </select>
+
+    <select id="getSanseqiu" parameterType="java.lang.String" resultType="com.ftq.bo.Sanseqiu">
+       select qishu,one,two,three,four,five ,six ,seven ,befores ,afters from daletou d
+       where d.qishu like  concat(#{nian},'%')
+       order by qishu desc
+    </select>
+</mapper>
